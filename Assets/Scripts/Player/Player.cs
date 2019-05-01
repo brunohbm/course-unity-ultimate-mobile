@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class Player : MonoBehaviour, IDamageable
 {
+    public int diamonds;
     [SerializeField]
     private LayerMask _groundLayer;
     [SerializeField]
@@ -23,6 +25,7 @@ public class Player : MonoBehaviour, IDamageable
         _playerAnim = GetComponent<PlayerAnimation>();
         _playerSprite = GetComponentInChildren<SpriteRenderer>();
         _swordArcSprit = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        Health = 4;
     }
 
     void Update()
@@ -33,7 +36,7 @@ public class Player : MonoBehaviour, IDamageable
 
     void Moviment()
     {
-        float move = Input.GetAxisRaw("Horizontal");
+        float move = CrossPlatformInputManager.GetAxis("Horizontal");
 
         if (move > 0)
         {
@@ -46,7 +49,7 @@ public class Player : MonoBehaviour, IDamageable
 
         _playerAnim.Jump(!IsGrounded());
 
-        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+        if ((Input.GetKeyDown(KeyCode.Space) || CrossPlatformInputManager.GetButtonDown("Jump")) && IsGrounded())
         {
             _playerRigid.velocity = new Vector2(_playerRigid.velocity.x, _jumpForce);
             StartCoroutine(ResetJumpNeededRoutine());
@@ -92,7 +95,7 @@ public class Player : MonoBehaviour, IDamageable
 
     void Attack()
     {
-        if (Input.GetMouseButtonDown(0) && IsGrounded())
+        if ((Input.GetMouseButtonDown(0) || CrossPlatformInputManager.GetButtonDown("Attack")) && IsGrounded())
         {
             _playerAnim.Attack();
         }
@@ -105,7 +108,17 @@ public class Player : MonoBehaviour, IDamageable
     }
 
     public void Damage() {
-        Debug.Log("Test");
+        if(Health < 1) return;
+        Health--;
+        UIManager.Instance.UpdateLives(Health);
+        if(Health < 1) {
+            _playerAnim.Death();
+        }
+    }
+
+    public void addDiamonds(int amount) {
+        diamonds += amount;
+        UIManager.Instance.setDiamondsText(diamonds);
     }
 
 }

@@ -4,17 +4,27 @@ using UnityEngine;
 
 public class MossGiant : Enemy, IDamageable {
 
+    public GameObject diamond;
+
     public int Health { get; set; }
 
     public void Damage () {
+        if(base.isDead) return;
+        
         base.anim.SetTrigger ("Hit");
         Health--;
         base.isHit = true;
         base.anim.SetBool ("InCombat", true);
         if (Health < 1) {
             base.isDead = true;
-            anim.SetTrigger("Death");
+            anim.SetTrigger ("Death");
+            instantiateDiamond ();
         }
+    }
+
+    void instantiateDiamond () {
+        GameObject newDiamond = Instantiate (diamond, transform.position, Quaternion.identity) as GameObject;
+        newDiamond.GetComponent<Diamond> ().gems = base.gems;
     }
 
     public override void Init () {

@@ -4,15 +4,26 @@ using UnityEngine;
 
 public class Spider : Enemy, IDamageable {
 
+    public GameObject diamond;
+
     public GameObject acidEffectPrefab;
+
     public int Health { get; set; }
 
     public void Damage () {
+        if(base.isDead) return;
+
         Health--;
         if (Health < 1) {
             base.isDead = true;
-            anim.SetTrigger("Death");
+            anim.SetTrigger ("Death");
+            instantiateDiamond ();
         }
+    }
+
+    void instantiateDiamond () {
+        GameObject newDiamond = Instantiate (diamond, transform.position, Quaternion.identity) as GameObject;
+        newDiamond.GetComponent<Diamond> ().gems = base.gems;
     }
 
     public override void Init () {

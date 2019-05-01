@@ -16,7 +16,7 @@ public class AcidEffect : MonoBehaviour {
             IDamageable hit = other.GetComponent<IDamageable> ();
 
             if (hit != null) {
-                hit.Damage ();
+                hit.Damage();
                 Destroy (this.gameObject);
             }
         }
